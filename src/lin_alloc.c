@@ -63,6 +63,8 @@ void *lin_alloc_realloc(void *ptr, size_t size, void *context) {
     }
     if ((uintptr_t)ptr + original_size == allocator->head) {
         BOUNDS_CHECK(allocator, size - original_size);
+        memcpy((void *)((uintptr_t)ptr - sizeof(size_t)), &size,
+               sizeof(size_t));
         allocator->head += size - original_size;
         return ptr;
     }
