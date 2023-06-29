@@ -7,14 +7,15 @@ extern "C" {
 
 #include <stddef.h>  // for size_t
 
-typedef void* (*roaring_malloc_p)(size_t);
-typedef void* (*roaring_realloc_p)(void*, size_t);
-typedef void* (*roaring_calloc_p)(size_t, size_t);
-typedef void (*roaring_free_p)(void*);
-typedef void* (*roaring_aligned_malloc_p)(size_t, size_t);
-typedef void (*roaring_aligned_free_p)(void*);
+typedef void* (*roaring_malloc_p)(size_t, void*);
+typedef void* (*roaring_realloc_p)(void*, size_t, void*);
+typedef void* (*roaring_calloc_p)(size_t, size_t, void*);
+typedef void (*roaring_free_p)(void*, void*);
+typedef void* (*roaring_aligned_malloc_p)(size_t, size_t, void*);
+typedef void (*roaring_aligned_free_p)(void*, void*);
 
 typedef struct roaring_memory_s {
+    void *context;
     roaring_malloc_p malloc;
     roaring_realloc_p realloc;
     roaring_calloc_p calloc;
