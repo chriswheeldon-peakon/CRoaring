@@ -24,7 +24,7 @@
 #if CROARING_IS_X64
 #ifndef CROARING_COMPILER_SUPPORTS_AVX512
 #error "CROARING_COMPILER_SUPPORTS_AVX512 needs to be defined."
-#endif // CROARING_COMPILER_SUPPORTS_AVX512
+#endif  // CROARING_COMPILER_SUPPORTS_AVX512
 #endif
 
 event_collector collector;
@@ -32,7 +32,7 @@ size_t N = 1000;
 size_t bitmap_examples_bytes = 0;
 size_t count = 0;
 roaring_bitmap_t **bitmaps = NULL;
-uint32_t * array_buffer;
+uint32_t *array_buffer;
 uint32_t maxvalue = 0;
 uint32_t maxcard = 0;
 
@@ -174,7 +174,9 @@ static roaring_bitmap_t **create_all_bitmaps(size_t *howmany,
                 maxvalue = numbers[i][howmany[i] - 1];
             }
         }
-        if(maxcard < howmany[i]) { maxcard = howmany[i]; }
+        if (maxcard < howmany[i]) {
+            maxcard = howmany[i];
+        }
     }
     if (numbers == NULL) return NULL;
     roaring_bitmap_t **answer =
@@ -187,7 +189,7 @@ static roaring_bitmap_t **create_all_bitmaps(size_t *howmany,
         bitmap_examples_bytes += roaring_bitmap_size_in_bytes(answer[i]);
         roaring_bitmap_set_copy_on_write(answer[i], copy_on_write);
     }
-    array_buffer = (uint32_t*) malloc(maxcard * sizeof(uint32_t));
+    array_buffer = (uint32_t *)malloc(maxcard * sizeof(uint32_t));
     return answer;
 }
 
@@ -210,13 +212,12 @@ static void BasicBench(benchmark::State &state) {
         }
         state.counters["cycles"] = aggregate.best.cycles();
 
-        state.counters["instructions"] =  aggregate.best.instructions();
+        state.counters["instructions"] = aggregate.best.instructions();
         state.counters["GHz"] =
             aggregate.best.cycles() / aggregate.best.elapsed_ns();
     }
     (void)marker;
 }
-
 
 int load(const char *dirname) {
     const char *extension = ".txt";
