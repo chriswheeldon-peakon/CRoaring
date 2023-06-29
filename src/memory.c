@@ -31,13 +31,38 @@ static void roaring_bitmap_aligned_free(void *memblock) {
 #endif
 }
 
+static void *default_malloc(size_t size, void *context) {
+    return malloc(size);
+}
+
+static void *default_realloc(void *ptr, size_t size, void *context) {
+    return realloc(ptr, size);
+}
+
+static void *default_calloc(size_t count, size_t size, void *context) {
+    return calloc(count, size);
+}
+
+static void default_free(void *ptr, void *context) {
+    free(ptr);
+}
+
+static void *default_aligned_malloc(size_t alignment, size_t size, void *context) {
+    return roaring_bitmap_aligned_malloc(alignment, size);
+}
+
+static void default_aligned_free(void *ptr, void *context) {
+    roaring_bitmap_aligned_free(context);
+}
+
 static roaring_memory_t global_memory_hook = {
-    .malloc = malloc,
-    .realloc = realloc,
-    .calloc = calloc,
-    .free = free,
-    .aligned_malloc = roaring_bitmap_aligned_malloc,
-    .aligned_free = roaring_bitmap_aligned_free,
+    .context = 0,
+    .malloc = default_malloc,
+    .realloc = default_realloc,
+    .calloc = default_calloc,
+    .free = default_free,
+    .aligned_malloc = default_aligned_malloc,
+    .aligned_free = default_aligned_free,
 };
 
 void roaring_init_memory_hook(roaring_memory_t memory_hook) {
@@ -45,25 +70,25 @@ void roaring_init_memory_hook(roaring_memory_t memory_hook) {
 }
 
 void* roaring_malloc(size_t n) {
-    return global_memory_hook.malloc(n);
+    return global_memory_hook.malloc(n, global_memory_hook.context);
 }
 
 void* roaring_realloc(void* p, size_t new_sz) {
-    return global_memory_hook.realloc(p, new_sz);
+    return global_memory_hook.realloc(p, new_sz, global_memory_hook.context);
 }
 
 void* roaring_calloc(size_t n_elements, size_t element_size) {
-    return global_memory_hook.calloc(n_elements, element_size);
+    return global_memory_hook.calloc(n_elements, element_size, global_memory_hook.context);
 }
 
 void roaring_free(void* p) {
-    global_memory_hook.free(p);
+    global_memory_hook.free(p, global_memory_hook.context);
 }
 
 void* roaring_aligned_malloc(size_t alignment, size_t size) {
-    return global_memory_hook.aligned_malloc(alignment, size);
+    return global_memory_hook.aligned_malloc(alignment, size, global_memory_hook.context);
 }
 
 void roaring_aligned_free(void* p) {
-    global_memory_hook.aligned_free(p);
+    global_memory_hook.aligned_free(p, global_memory_hook.context);
 }
